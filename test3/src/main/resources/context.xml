@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- 
+			<jsp:useBean id="" class="" />
+			지정한 scope에 기본생성자 호출하여 객체를 생성하는 코드
+			
+			<bean id="" class="" />
+			스프링 컨테이너에 지정한 클래스로 객체를 생성하는 태그(기본적으로 싱글톤)
+			
+			<jsp:setProperty property="" name="" />
+	 -->
+	<bean id="t3" class="test3.Today">
+		<property name="name" value="이지은" /><!-- setter 호출 -->
+		
+		<!-- <constructor-arg />	 -->
+		<!-- 생성자 호출시 매개변수 전달 가능 -->
+	</bean>
+		
+</beans>
