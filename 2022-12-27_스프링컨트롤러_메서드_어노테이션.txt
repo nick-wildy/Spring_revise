@@ -1,0 +1,54 @@
+day01
+
+스프링 컨트롤러 메서드
+
+1) 반환형
+
+void		: 요청 주소에 따라 viewName을 결정한다
+String		: 반환되는 값을 viewName으로 결정한다
+ModelAndView	: 생성자 매개변수 혹은 setViewName(String viewName)에 의해 viewName 결정
+
+2) 매개변수
+
+HttpServletRequest	: JSP 내장 객체 request
+HttpServletResponse	: JSP 내장 객체 response
+HttpSession		: JSP 내장 객체 session
+pritimitive, String	: request.getParameter에 대응된다
+Model			: request대신 attribute를 전달하는 가벼운 객체
+커맨드 객체		: 임의의 클래스를 작성하여, 여러 파라미터를 객체로 처리할 수 있다
+
+3) 어노테이션
+
+@Controller	: 클래스에 지정하여 스프링 빈으로 등록함과 동시에 컨트롤러의 역할을 수행한다
+		  요청 주소에 따라 실행할 함수를 작성하는 클래스이다
+		  요청에 따른 응답을 결정할 수 있다
+
+@RequestMapping	: 클래스 혹은 메서드에 지정하여, 어떤 요청이 왔을 때 반응할지 결정한다
+		  value와 method를 지정할 수 있으며, 다른 세부 속성도 있다
+
+@GetMapping	: @RequestMapping(value="", method=RequestMethod.GET) 
+@PostMapping	: @RequestMapping(value="", method=RequestMethod.POST)
+@PutMapping	: @RequestMapping(value="", method=RequestMethod.PUT)
+@PatchMapping	: @RequestMapping(value="", method=RequestMethod.PATCH)
+@DeleteMapping	: @RequestMapping(value="", method=RequestMethod.DELETE)
+
+	=== 위 5개의 단축 어노테이션은 @RequestMapping으로 변환되어 실행된다 (4.1.0 ↑) ===
+
+@RequestParam	: request.getParameter(), 보통 매개변수 앞에서 생략된다
+		  단, 파라미터를 Map으로 처리하는 경우 반드시 명시해야 한다
+@ModelAttribute	: model.addAttribute(), 파라미터를 곧바로 model에 추가한다
+		  자주 사용되는 편은 아니다.
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
