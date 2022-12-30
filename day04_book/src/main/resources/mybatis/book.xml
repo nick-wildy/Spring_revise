@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+	"-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.itbank.repository.BookDAO">
+
+	<!-- List<BookDTO> selectListAll() -->
+	<select id="selectListAll" resultType="book">
+		select 
+			idx, name, price, publisher 
+				from book3
+				 
+			order by idx
+	</select>
+	
+	<!-- List<BookDTO> selectSearchList(HashMap<String, Object> param) -->
+	<select id="selectSearchList" parameterType="hashmap" resultType="book">
+		select 
+			idx, name, price, publisher 
+				from book3 
+			where 
+				${type} like '%${keyword}%'
+	</select>
+	
+	<insert id="insertBook" parameterType="book">
+		insert into book3 values 
+			( 
+				book3_seq.nextval, 
+			  	#{name}, 
+			  	#{author}, 
+			  	#{publisher}, 
+			  	#{publishDate}, 
+			  	#{price}, 
+			  	#{memo}, 
+			  	#{score}
+			 )
+	</insert>
+	
+	<select id="selectOne" parameterType="int" resultType="book">
+		select * from book3 where idx=#{idx}
+	</select>
+	
+	<update id="update" parameterType="book">
+		update book3 
+			set 
+				 name = #{name}, 
+				 author = #{author}, 
+				 publisher = #{publisher}, 
+				 publishDate = #{publishDate}, 
+				 price = #{price}, 
+				 memo = #{memo}, 
+				 score = #{score} 
+		 	where 
+		 		 idx = #{idx}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from book3 where idx=#{idx}
+	</delete>
+
+</mapper>
+
+
+
+
