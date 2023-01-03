@@ -1,0 +1,15 @@
+		Windows			Linux
+경로 구분자		\			/
+		 (문자열 규칙 때문에 \\)
+
+경로 나열자		;			:
+
+변수 참조자		%VAR%			$VAR
+
+===========================================================
+
+윈도우 환경 변수 설정 예시
+	PATH=%PATH%;%JAVA_HOME%\bin;%CATALINA_HOME%\bin;
+
+리눅스 환경 변수 설정 예시
+	PATH=$PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin:
