@@ -1,0 +1,57 @@
+스프링 파일 업로드
+
+0) commons-io, commons-fileupload 라이브러리 의존성 설정
+(mvnrepository.com)
+(pom.xml)
+
+1) multipartResolver 스프링 빈 등록
+(servlet-context.xml)
+- 파일 업로드 사이즈
+- 최대 메모리 사이즈
+- 인코딩
+
+2) <form method="POST" enctype="multipart/form-data">
+       <input type="file" name="upload" multiple>
+   </form>
+
+3) 컨트롤러 메서드 구성
+@PostMapping
+public ModelAndView method(MultipartRequest request) { ... }
+public ModelAndView method(MultipartFile upload) { ... }
+public ModelAndView method(DTO dto) { ... }
+
+4) 커맨드 객체 활용 DTO 구성
+public class DTO {
+    private MultipartFile upload;
+    private String fileName;	// DB에 저장할 파일이름
+    ...
+}
+
+5) 중첩 커맨드 객체를 활용한 DTO 구성
+public class DTO {
+    private List<MultipartFile> upload;
+    private String fileName;	// 여러파일이름을 하나의 문자열로
+				// <c:forTokens delims=",">
+    ...
+}
+
+6) Service 
+
+- 업로드할 폴더를 확인하여 없으면 생성하도록 한다 (생성자 or 메서드)
+- MultipartFile a
+- File b = new File(String parent, String child);
+- File b = new File(String folder, String fileName);
+- a.transferTo(b)
+
+7) 올린 파일을 참조하려면 resources 태그를 활용한다
+(servlet-context.xml)
+
+<resources mapping="요청주소형식" location="파일이위치하는폴더">
+
+
+
+
+
+
+
+
