@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+	"-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.itbank.repository.HomeplusDAO">
+
+	<select id="selectList" resultType="homeplus">
+		select * from homeplus order by idx
+	</select>
+	
+	<insert id="insert" parameterType="homeplus">
+		insert into homeplus values (
+		    homeplus_seq.nextval,
+		    #{category},
+		    #{productName},
+		    #{price},
+		    #{score},
+		    #{thumbnail},
+		    #{reviewImage},
+		    sysdate
+		)
+	</insert>
+	
+	<select id="selectOne" parameterType="int" resultType="homeplus">
+		select * from homeplus
+			where
+				idx = #{idx}
+	</select>
+
+	<update id="update" parameterType="homeplus">
+		update homeplus
+			set
+				category = #{category},
+			    productName = #{productName},
+			    price = #{price},
+			    score = #{score},
+			    thumbnail = #{thumbnail},
+			    reviewImage = #{reviewImage}
+			where
+				idx = #{idx}
+	</update>
+	
+	<select id="selectListOrderBy" parameterType="string" resultType="homeplus">
+		select * from homeplus
+			order by ${orderBy}
+	</select>
+	
+	<select id="selectCount" resultType="int">
+		select count(*) from homeplus
+	</select>
+	
+	<select id="selectSearchList" parameterType="string" resultType="homeplus">
+		select * from homeplus
+			where
+				productName like '%${keyword}%'
+				or
+				price like '%${keyword}%'
+	</select>
+	
+	
+
+
+</mapper>
+
+
+
+
