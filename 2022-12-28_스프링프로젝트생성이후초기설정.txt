@@ -1,0 +1,21 @@
+pom.xml
+- 자바, 스프링 버전 설정
+- 맨 아래 소스, 타겟 1.8
+- 라이브러리 의존성 설정
+(xerces)
+
+web.xml
+- webapp version
+- encodingFilter
+
+servlet-context.xml
+- top-level-package 이름 변경
+- HomeController 새로 만들기
+- home.jsp 새로 만들기
+
+root-context.xml
+- context 네임스페이스 추가
+- service 및 repository, model 패키지 스캔 설정하기
+- DB 관련 스프링 빈 추가
+
+프로젝트 실행 후 home.jsp 실행 결과 확인하기
