@@ -1,0 +1,183 @@
+
+스프링 프로젝트
+마이바티스 로그 출력하기
+
+- MyBatis에서 실행하는 쿼리문이 출력되지 않아 디버깅이 어려울 수 있다
+- log4j를 활용하여 마이바티스에서 실행되는 SQL문과 결과를 확인한다
+
+1) pom.xml 의존성 추가
+
+	<!-- slf4j -->
+	<dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-slf4j-impl</artifactId>
+	    <version>2.4</version>
+	</dependency>
+	
+	<!-- log4j(2)-core -->
+	<dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-core</artifactId>
+	    <version>2.4</version>
+	    <exclusions>
+	        <exclusion>
+	            <artifactId>log4j-api</artifactId>
+	            <groupId>org.apache.logging.log4j</groupId>
+	        </exclusion>
+	    </exclusions>
+	</dependency>
+	 
+	<!-- log4jdbc-log4j2 -->
+	<dependency>
+	    <groupId>org.bgee.log4jdbc-log4j2</groupId>
+	    <artifactId>log4jdbc-log4j2-jdbc4</artifactId>
+	    <version>1.16</version>
+	</dependency>
+
+
+
+
+2) root-context.xml 에서 드라이버와 접속 주소 수정
+
+<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+	<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy" />
+	<property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@192.168.1.100:1521:xe" />
+	<property name="username" value="c##itbank" />
+	<property name="password" value="it" />
+</bean>
+
+
+
+3) src/main/resources/log4jdbc.log4j2.properties 파일 작성
+(실제 접속에 사용할 드라이버를 지정하고, 수행되는 쿼리를 위임받아 처리하는 클래스를 지정한다)
+
+log4jdbc.spylogdelegator.name=net.sf.log4jdbc.log.slf4j.Slf4jSpyLogDelegator
+log4jdbc.dump.sql.maxlinelength=0
+log4jdbc.drivers=oracle.jdbc.driver.OracleDriver
+log4jdbc.auto.load.popular.drivers=false
+
+
+
+4) src/main/resources/log4j2.xml 파일 작성
+(로그를 종류별로 구분하여 출력 레벨을 지정한다)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+ 
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+        
+           <RollingFile name="file" fileName="/filePath/logs.log" filePattern="/filePath/WAS.%i.%d{yyyy-MM-dd}.log">
+               <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+               <Policies>
+                   <SizeBasedTriggeringPolicy size="100MB"/>
+               </Policies>
+               <DefaultRolloverStrategy max="10000" fileIndex="min" />
+           </RollingFile>
+    </Appenders>
+    
+    <Loggers>
+ 
+        <Logger name="org.mybatis" level="warn" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="file" />
+        </Logger>
+        
+        <Logger name="org.springframework" level="warn" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="file" />
+        </Logger>
+        <Logger name="org.apache" level="warn" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="file" />
+        </Logger>
+        
+        
+        <!-- SQL 로그 출력 -->
+        <Logger name="jdbc.sqlonly" level="DEBUG" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="file" />
+        </Logger>
+        <Logger name="jdbc.resultsettable" level="DEBUG" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="file" />
+        </Logger>
+        
+    </Loggers>
+    
+</Configuration>
+
+
+
+5) 쿼리문을 수행하는 요청을 전송하여 결과를 확인한다
+
+@Repository
+public interface TestDAO {
+
+	@Select("select banner from v$version")
+	String selectVersion();
+
+	@Select("select sysdate from dual")
+	Date selectSysDate();
+
+	@Select("select * from member5 order by idx")
+	List<HashMap<String, Object>> selectMemberList();
+
+}
+
+
+6) 결과 확인
+
+2023-01-16 10:59:13.462 [http-nio-8080-exec-3] DEBUG jdbc.sqlonly -  com.zaxxer.hikari.pool.ProxyPreparedStatement.execute(ProxyPreparedStatement.java:44)
+1. select banner from v$version
+
+2023-01-16 10:59:13.624 [http-nio-8080-exec-3] INFO  jdbc.resultsettable - 
+|--------------------------------------------------------------------|
+|banner                                                              |
+|--------------------------------------------------------------------|
+|Oracle Database 18c Express Edition Release 18.0.0.0.0 - Production |
+|--------------------------------------------------------------------|
+
+2023-01-16 10:59:16.580 [http-nio-8080-exec-4] DEBUG jdbc.sqlonly -  com.zaxxer.hikari.pool.ProxyPreparedStatement.execute(ProxyPreparedStatement.java:44)
+1. select sysdate from dual
+
+2023-01-16 10:59:16.585 [http-nio-8080-exec-4] INFO  jdbc.resultsettable - 
+|-----------|
+|sysdate    |
+|-----------|
+|2023-01-16 |
+|-----------|
+
+2023-01-16 10:59:19.235 [http-nio-8080-exec-5] DEBUG jdbc.sqlonly -  com.zaxxer.hikari.pool.ProxyPreparedStatement.execute(ProxyPreparedStatement.java:44)
+1. select * from member5 order by idx
+
+2023-01-16 10:59:19.244 [http-nio-8080-exec-5] INFO  jdbc.resultsettable - 
+|----|----------|----------|---------|----------------------|-------|
+|idx |userid    |userpw    |username |birth                 |gender |
+|----|----------|----------|---------|----------------------|-------|
+|2   |test2     |1234      |테스트2     |1995-01-31 00:00:00.0 |여성     |
+|3   |test3     |1234      |테스트3     |1992-12-06 00:00:00.0 |남성     |
+|5   |test4     |1234      |테스트      |2023-01-06 00:00:00.0 |남성     |
+|19  |kgitbank1 |123456789 |아이티뱅크1   |2022-12-31 00:00:00.0 |남성     |
+|20  |kgitbank2 |1234      |아이티뱅크2   |1993-05-12 00:00:00.0 |여성     |
+|----|----------|----------|---------|----------------------|-------|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
