@@ -1,0 +1,66 @@
+@charset "utf-8";
+
+#root{
+    width: 1500px;
+    margin: auto;
+}
+.headline{
+    text-align: center;
+}
+.wrap {
+    display: flex;
+}
+.left {
+    flex: 1;
+    padding: 10px;
+    overflow: hidden;
+    font-size: 20px;
+}
+.left p label {
+    user-select: none;
+}
+.left p input[type="checkbox"] {
+    margin-right: 20px;
+}
+.right {
+    flex: 4;
+    padding: 10px;
+}
+#column {
+    background-color: #dadada;
+    font-weight: bold;
+    text-align: center;
+}
+#items {
+    height: 80vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+::-webkit-scrollbar {
+    display: none;
+}
+.item {
+    display: flex;
+}
+#items > .item:hover {
+    background-color: #eee;
+    
+}
+.item > div {
+    flex: 1;
+    padding: 5px 10px;
+    border: 1px solid black;
+}
+.item > div:first-child {
+    flex: 3;
+}
+.hidden{
+    display: none;
+}
+#column > div:hover{
+    cursor: pointer;
+}
+fieldset >legend {
+    margin: auto;
+}
+

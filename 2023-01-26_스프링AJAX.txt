@@ -1,0 +1,93 @@
+2023-01-26
+
+스프링 AJAX
+
+1) 일반 컨트롤러에서도 AJAX 요청을 처리할 수 있다
+- produces 는 함수가 생산하는 값 (반환값)에 대한 Content-Type 및 인코딩 규칙을 지정할 수 있다
+- @ResponseBody 는 함수의 반환값이 viewName으로 활용되지 않게끔 한다
+  (반환값이 그대로 응답이 된다)
+
+@Controller
+public class NormalController {
+	
+	@GetMapping(value="/ex01", produces="text/html; charset=utf-8")
+	@ResponseBody
+	public String ex01() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String today = sdf.format(new Date());
+		return "안녕하세요. 오늘은 " + today + " 입니다";
+	}
+}
+
+
+
+
+2) @RestController 는 모든 함수에 @ResponseBody 가 적용된다
+
+@RestController	
+public class AjaxController {
+	
+	// 컨트롤러 내부의 모든 함수는 @ResponseBody가 적용된다
+	// RestController는 viewName으로 처리하지 않는다
+
+	@PostMapping("/ex02")
+	public String ex02post() {
+		return "ex02, POST 성공";
+	}
+}
+
+
+
+
+3) 모든 함수에 반복하여 처리하는 produces 는 servlet-context.xml 에서 전역 설정을 만들어 처리할 수 있다
+
+==> servlet-context.xml <==
+
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<annotation-driven>
+		<message-converters>
+			<beans:bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<beans:property name="supportedMediaTypes">
+					<beans:list>
+						<beans:value>text/html; charset=utf-8</beans:value>
+					</beans:list>
+				</beans:property>
+			</beans:bean>
+		</message-converters>
+	</annotation-driven>
+
+==> AjaxController.java <==
+
+	@PostMapping("/ex02")
+	public String ex02post() {
+		return "ex02, POST 성공";
+	}
+
+- 설정이 적용되었다면, produces 를 지정하지 않아도 된다
+
+
+
+
+4) 자바 객체도 JSON 형태로 변환하여 반환할 수 있다. 단, 의존성을 추가해야 한다
+
+==> AjaxController.java <==
+
+	@GetMapping("/ex04")
+	public List<TestDTO> ex04() {
+		List<TestDTO> list = new ArrayList<TestDTO>();
+		list.add(new TestDTO("이지은", 31));
+		list.add(new TestDTO("홍진호", 42));
+		list.add(new TestDTO("나단비", 5));
+		return list;
+	}
+
+
+==> pom.xml <==
+
+	<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+	<!-- 자바 객체를 JSON형태로 변환하는 라이브러리 -->
+	<dependency>
+	    <groupId>com.fasterxml.jackson.core</groupId>
+	    <artifactId>jackson-databind</artifactId>
+	    <version>2.14.1</version>
+	</dependency>
