@@ -1,0 +1,60 @@
+2023-01-26
+
+1) 브라우저에서 링크를 클릭하면 jsp가 화면에 보여진다
+(일반 요청이며, @Controller 에서 받아서 처리함)
+
+==> home.jsp <==
+<p>
+    <a href="${cpath }/homeplus"><button>홈플러스 메뉴 불러오기 (DB연동 AJAX)</button></a>
+</p>
+
+==> NormalController.java <==
+    @GetMapping("/homeplus")
+    public void homeplus() {}
+
+
+2) jsp 코드 내부에서 HTML 구조가 모두 불러와지면, 실행되는 함수를 작성한다
+
+==> homeplus.jsp <==
+<script>
+    const cpath = '${cpath}'
+    const items = document.getElementById('items')
+    
+    // 문서 body가 모두 불러와지면 자동으로 loadHandler를 실행한다
+    document.body.onload = loadHandler
+</script>
+
+
+
+3) loadHandler 함수에서는 fetch를 이용하여 AJAX요청을 서버에 보내고 응답을 받는다
+(비동기 요청이며, @RestController 에서 받아서 처리함)
+(이때 응답은 자바 객체를 반환하면, JSON문자열로 변환하여 반환하게 됨)
+
+==> function.js <==
+function loadHandler() {
+    const url = cpath + '/homeplus/product'
+    const opt = {
+        method: 'GET'
+    }
+    fetch(url, opt)
+    .then(resp => resp.json())    
+    .then(json => {    
+        const arr = json
+        items.innerHTML = ''
+        arr.forEach(dto => items.innerHTML += dtoToHTML(dto))
+    })
+}
+
+
+==> AjaxController.java <==
+    // 자바 객체를 JSON형식에 맞는 문자열로 변환할 수 있는 객체
+    private ObjectMapper mapper = new ObjectMapper();
+    
+    @GetMapping("/homeplus/product")
+    public String productList() throws IOException {
+        // 자바 객체를 JSON 규칙에 맞게, 문자열 형태로 변환하여 반환한다
+        // 자바 객체를 JSON 문자열로 변환 -> (js에서는 JSON문자열을 자바스크립트 객체로 변환)
+        List<HomeplusDTO> list = homeplusService.getProductList();
+        String jsonString = mapper.writeValueAsString(list);
+        return jsonString;
+    }
