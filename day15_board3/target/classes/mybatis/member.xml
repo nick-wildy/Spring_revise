@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+	"-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.itbank.repository.MemberDAO">
+
+	<select id="selectList" resultType="member">
+		select * from member5
+			order by idx
+	</select>
+	
+	<insert id="insert" parameterType="member">
+		insert into member5
+			(userid, userpw, username, birth, gender)
+		values 
+			(
+				#{userid},
+				#{userpw},
+				#{username},
+				#{birth},
+				#{gender}
+			)
+	</insert>
+	
+	<select id="login" parameterType="member" resultType="member">
+		select * from member5
+			where
+				userid = #{userid}
+				and
+				userpw = #{userpw}
+	</select>
+	
+	<!-- myBatis의 동적 쿼리, 하나의 태그가 서로 다른 쿼리문을 실행할 수 있게 된다 -->
+	<update id="update" parameterType="member">
+		update member5
+			<set>
+				<if test="userpw != null and userpw != '' ">		
+					userpw = #{userpw},		
+				</if>
+				<if test="username != null">	username = #{username},	</if>
+				<if test="birth != null">		birth = #{birth},		</if>
+				<if test="gender != null">		gender = #{gender},		</if>
+			</set>
+			
+			where
+				userid = #{userid}
+	</update>
+	
+	<select id="selectOne" parameterType="string" resultType="member">
+		select * from member5 where userid = #{userid}
+	</select>
+	
+	<delete id="delete" parameterType="string">
+		delete member5 where userid = #{userid}
+	</delete>
+	
+	<select id="selectUseridCount" resultType="int" parameterType="string">
+		select count(*) from member5
+			where
+				userid = #{inputId}
+	</select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
