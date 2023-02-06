@@ -1,0 +1,64 @@
+-- 깊이 개념이 없는 단순 댓글
+
+drop table reply2;
+drop sequence reply2_seq;
+
+create sequence reply2_seq 
+    start with 1
+    maxvalue 99999
+    increment by 1
+    nocache
+    nocycle;
+
+create table reply2 (
+    idx         number          default reply2_seq.nextval primary key,
+    board_idx   number          ,
+    -- 계층형 댓글을 위한 추가 컬럼
+    parent_idx number default 0,
+    reply_depth number default 0,
+    
+    writer      varchar2(100)   ,
+    content     varchar2(4000)  not null,
+    writeDate   date            default sysdate,
+    
+    constraint reply2_board2
+    foreign key(board_idx)
+    REFERENCES board2(idx)
+    on delete set null,
+    
+    constraint reply2_member5
+    foreign key(writer)
+    REFERENCES member5(userid)
+    on delete set null
+);
+
+insert into reply2 values (
+    reply2_seq.nextval,771,0, 0, 'test1', '댓글1', sysdate
+);
+insert into reply2 values (
+    reply2_seq.nextval,771,0, 0, 'test1', '댓글2', sysdate
+);
+insert into reply2 values (
+    reply2_seq.nextval,771,0, 0, 'test1', '댓글3', sysdate
+);
+insert into reply2 values (
+    reply2_seq.nextval,771,1, 1, 'test1', '댓글1-1', sysdate
+);
+insert into reply2 values (
+    reply2_seq.nextval,771,2, 1, 'test1', '댓글2-1', sysdate
+);
+insert into reply2 values (
+    reply2_seq.nextval,771,4, 2, 'test1', '댓글1-1-1', sysdate
+);
+
+
+commit;
+select * from reply2;
+delete from reply2 where idx = 9;
+select * 
+    from (
+        select * from reply2 
+            where board_idx=771
+        )
+start with parent_idx=0
+connect by prior idx = parent_idx;

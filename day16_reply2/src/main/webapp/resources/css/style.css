@@ -1,0 +1,16 @@
+@charset "utf-8";
+div.wrap {
+	margin: auto;
+}
+table#boardList {
+	min-width: 800px;
+	margin: auto;	 	
+}
+table#boardList tr > td,
+table#boardList tr > th {
+	width: 12%;
+}
+table#boardList tr > td:nth-child(2),
+table#boardList tr > th:nth-child(2) {
+	width: 40%;
+}
